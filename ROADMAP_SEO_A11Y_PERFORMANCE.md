@@ -10,11 +10,11 @@
   - `/account`
   - `/u/[handle]` (User Profiles)
   - `/admin/reports`
-- **Missing Primitives:**
-  - `next.config.ts` is currently empty (no remote image domains configured).
-  - SEO fundamentals (missing `sitemap.ts`, `robots.ts`, Open Graph images, Twitter cards, and detailed route-level metadata).
-  - Accessibility (missing skip-to-content links, comprehensive ARIA labels, semantic landmark stabilization, and explicit focus states).
-  - Performance (raw `<img>` usage in avatars instead of `next/image` or optimized fallback, causing potential layout shifts and unoptimized loading).
+- **Implemented Primitives:**
+  - `next.config.ts` is configured for `*.supabase.co` remote patterns.
+  - SEO fundamentals are implemented (`sitemap.ts`, `robots.ts`, Open Graph, Twitter cards, metadata, JSON-LD).
+  - Accessibility primitives are implemented (skip links, ARIA labels, semantic landmarks, reduced motion, focus visibility).
+  - Performance fundamentals are implemented (loading skeletons, optimized `next/image` usage).
 
 ## Guiding Product Vision
 VerifiedSocial is built as a **trust-first social platform**. Our core philosophy:
@@ -49,12 +49,12 @@ VerifiedSocial is built as a **trust-first social platform**. Our core philosoph
 - [x] Improve form labels, error messages, success messages, and focus handling in auth, post, report, and verification flows.
 
 ## Phase 4 — Performance
-- [ ] Replace raw avatar `<img>` usage with a safe, optimized `<Image>` component using `next/image` (or a well-reasoned UI fallback if remote domains are unknown).
-- [ ] Configure `next.config.ts` for remote images (inspect Supabase storage/avatar URL patterns first).
-- [ ] Keep the public homepage mostly server-rendered, avoiding unnecessary client JavaScript.
-- [ ] Add loading/skeleton states for the feed and major interaction points (`loading.tsx` or Suspense boundaries).
-- [ ] Review the public feed query shape, reduce repeated Supabase calls, and verify selected columns and limits.
-- [ ] Document bundle/performance notes and plan for Lighthouse audits.
+- [x] Replace raw avatar `<img>` usage with a safe, optimized `<Image>` component using `next/image` (or a well-reasoned UI fallback if remote domains are unknown).
+- [x] Configure `next.config.ts` for remote images (inspect Supabase storage/avatar URL patterns first).
+- [x] Keep the public homepage mostly server-rendered, avoiding unnecessary client JavaScript.
+- [x] Add loading/skeleton states for the feed and major interaction points (`loading.tsx` or Suspense boundaries).
+- [x] Review the public feed query shape, reduce repeated Supabase calls, and verify selected columns and limits.
+- [x] Document bundle/performance notes and plan for Lighthouse audits.
 
 ## Phase 5 — Premium UI, Motion, and Fun
 - [ ] Build a stronger landing page with sections: Trust Layer, How Verification Works, Browse vs Verified Posting, Safety Tools, and Community Signals.
@@ -109,4 +109,5 @@ Include manual browser checks:
 - **2026-04-25:** Created initial `ROADMAP_SEO_A11Y_PERFORMANCE.md` covering Phase 1 through Phase 6 planning.
 - **2026-04-25:** Reconciled and implemented Phase 2 SEO Foundations (root/route metadata, JSON-LD, sitemap, robots).
 - **2026-04-25:** Reconciled and implemented Phase 3 Accessibility (skip link, nav `aria-current`, button ARIA, form labels, reduced motion).
+- **2026-04-25:** Reconciled and implemented Phase 4 Performance (`next/image`, `next.config.ts`, loading skeletons).
 - [ ] *Future passes will log updates here...*

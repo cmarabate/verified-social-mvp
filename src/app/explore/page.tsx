@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { PostComposer } from './PostComposer'
 import Link from 'next/link'
+import Image from 'next/image'
 import { LikeButton } from '@/components/LikeButton'
 import { ReportButton } from '@/components/ReportButton'
 import { Metadata } from 'next'
@@ -65,10 +66,9 @@ export default async function ExplorePage() {
             return (
             <div key={post.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-gray-500 font-medium">
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-gray-500 font-medium relative">
                   {profile?.avatar_url ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={profile.avatar_url} alt={`${profile.display_name || 'User'}'s avatar`} className="w-full h-full object-cover" />
+                    <Image src={profile.avatar_url} alt={`${profile.display_name || 'User'}'s avatar`} fill className="object-cover" sizes="40px" />
                   ) : (
                     <span aria-hidden="true">{(profile?.display_name || 'U').charAt(0).toUpperCase()}</span>
                   )}

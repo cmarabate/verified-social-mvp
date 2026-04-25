@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import Image from 'next/image'
 
 import { LikeButton } from '@/components/LikeButton'
 import { FollowButton } from '@/components/FollowButton'
@@ -95,10 +96,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
       <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-gray-500 text-2xl font-medium">
+            <div className="w-20 h-20 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-gray-500 text-2xl font-medium relative">
               {profile.avatar_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={profile.avatar_url} alt={`${profile.display_name || 'User'}'s avatar`} className="w-full h-full object-cover" />
+                <Image src={profile.avatar_url} alt={`${profile.display_name || 'User'}'s avatar`} fill className="object-cover" sizes="80px" />
               ) : (
                 <span aria-hidden="true">{(profile.display_name || 'U').charAt(0).toUpperCase()}</span>
               )}
