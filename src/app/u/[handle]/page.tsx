@@ -107,7 +107,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 {profile.display_name || 'Unknown User'}
                 {profile.is_verified && (
-                  <span className="text-blue-500 text-sm flex items-center" title="Verified account">
+                  <span className="text-blue-500 text-sm flex items-center bg-blue-50 rounded-full p-0.5" title="Verified account">
                     <span aria-hidden="true">✓</span>
                     <span className="sr-only">Verified account</span>
                   </span>
@@ -138,7 +138,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
             const isLiked = user ? post.likes?.some((l: { user_id: string }) => l.user_id === user.id) : false;
 
             return (
-            <div key={post.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div key={post.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200">
               <p className="text-gray-800 whitespace-pre-wrap mb-4">{post.content}</p>
               <div className="flex items-center justify-between border-t border-gray-100 pt-3">
                 <LikeButton 
@@ -155,8 +155,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
             )
           })
         ) : (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-            <p className="text-gray-500">No posts yet.</p>
+          <div className="text-center py-16 bg-white rounded-lg border border-gray-200 border-dashed">
+            <p className="text-gray-500 font-medium">No posts yet.</p>
           </div>
         )}
       </div>
