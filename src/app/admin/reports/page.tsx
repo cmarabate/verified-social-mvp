@@ -2,6 +2,15 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { dismissReport, deletePostByAdmin } from '@/app/actions/admin'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Admin Reports | VerifiedSocial',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function AdminReportsPage() {
   const supabase = await createClient()

@@ -1,6 +1,15 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { ProfileForm } from './ProfileForm'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Account | VerifiedSocial',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default async function AccountPage() {
   const supabase = await createClient()

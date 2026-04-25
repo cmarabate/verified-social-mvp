@@ -1,8 +1,31 @@
 import Link from 'next/link'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Home | VerifiedSocial',
+  description: 'Welcome to VerifiedSocial, a community built on trust. We use real identity verification to ensure a safe, authentic environment for everyone.',
+  openGraph: {
+    title: 'Home | VerifiedSocial',
+    description: 'Welcome to VerifiedSocial, a community built on trust. We use real identity verification to ensure a safe, authentic environment for everyone.',
+    url: '/',
+  },
+}
 
 export default function Home() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'VerifiedSocial',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    description: 'A community built on trust. We use real identity verification to ensure a safe, authentic environment for everyone.',
+  }
+
   return (
     <div className="bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
           <div className="text-center">

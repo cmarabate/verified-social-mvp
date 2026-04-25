@@ -32,10 +32,10 @@ VerifiedSocial is built as a **trust-first social platform**. Our core philosoph
 - [ ] Decide on the necessity of any dedicated verification scripts (only if clearly justified).
 
 ## Phase 2 — SEO Foundations
-- [ ] Improve root Metadata in `layout.tsx` with a title template, robust description, app name, `metadataBase` placeholder, Open Graph config, Twitter cards, and robots settings.
-- [ ] Add route-level metadata for homepage, explore, auth, verify, account, user profiles, and admin routes.
-- [ ] Add `sitemap.ts` and `robots.ts` to the app root.
-- [ ] Add structured data (JSON-LD) for `WebSite`, `Organization`/`SoftwareApplication`, and potentially safe public profile/post schemas.
+- [x] Improve root Metadata in `layout.tsx` with a title template, robust description, app name, `metadataBase` placeholder, Open Graph config, Twitter cards, and robots settings.
+- [x] Add route-level metadata for homepage, explore, auth, verify, account, user profiles, and admin routes.
+- [x] Add `sitemap.ts` and `robots.ts` to the app root.
+- [x] Add structured data (JSON-LD) for `WebSite`, `Organization`/`SoftwareApplication`, and potentially safe public profile/post schemas.
 - [ ] Improve homepage copy to emphasize trust, verified communities, safer posting, and authenticity.
 - [ ] Add social preview image strategy (static OG image or generated route).
 
@@ -107,4 +107,5 @@ Include manual browser checks:
 
 ## Progress Log
 - **2026-04-25:** Created initial `ROADMAP_SEO_A11Y_PERFORMANCE.md` covering Phase 1 through Phase 6 planning.
+- **2026-04-25:** Reconciled and implemented Phase 2 SEO Foundations (root/route metadata, JSON-LD, sitemap, robots).
 - [ ] *Future passes will log updates here...*

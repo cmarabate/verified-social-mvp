@@ -3,6 +3,17 @@ import { PostComposer } from './PostComposer'
 import Link from 'next/link'
 import { LikeButton } from '@/components/LikeButton'
 import { ReportButton } from '@/components/ReportButton'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Explore | VerifiedSocial',
+  description: 'Discover verified posts from the VerifiedSocial community. Browse freely, verify to post.',
+  openGraph: {
+    title: 'Explore | VerifiedSocial',
+    description: 'Discover verified posts from the VerifiedSocial community. Browse freely, verify to post.',
+    url: '/explore',
+  },
+}
 
 export default async function ExplorePage() {
   const supabase = await createClient()

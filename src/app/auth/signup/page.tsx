@@ -1,4 +1,13 @@
 import { signup } from '../actions'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Sign Up | VerifiedSocial',
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 export default function SignupPage() {
   return (

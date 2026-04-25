@@ -1,9 +1,35 @@
 import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 
 import { LikeButton } from '@/components/LikeButton'
-
 import { FollowButton } from '@/components/FollowButton'
+
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  const { handle } = await params
+  const supabase = await createClient()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('display_name, handle')
+    .eq('handle', handle)
+    .single()
+
+  if (!profile) {
+    return {
+      title: 'User Not Found | VerifiedSocial'
+    }
+  }
+
+  return {
+    title: `${profile.display_name || 'Unknown User'} (@${profile.handle}) | VerifiedSocial`,
+    description: `Check out ${profile.display_name || 'Unknown User'}'s profile on VerifiedSocial.`,
+    openGraph: {
+      title: `${profile.display_name || 'Unknown User'} (@${profile.handle}) | VerifiedSocial`,
+      description: `Check out ${profile.display_name || 'Unknown User'}'s profile on VerifiedSocial.`,
+      url: `/u/${profile.handle}`,
+    },
+  }
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params
