@@ -40,13 +40,13 @@ VerifiedSocial is built as a **trust-first social platform**. Our core philosoph
 - [ ] Add social preview image strategy (static OG image or generated route).
 
 ## Phase 3 — Accessibility
-- [ ] Add a skip-to-content link and ensure the `<main>` landmark has a stable `id`.
-- [ ] Improve nav semantics, `aria-current` affordances, mobile/responsive behavior, and visible keyboard focus states.
-- [ ] Review color contrast across the app, ensuring we do not rely on color alone for verified/admin/report states.
-- [ ] Ensure buttons and links have accessible names; ensure disabled states (like unauthorized interactions) remain understandable to screen readers.
-- [ ] Improve avatar `alt` text and implement a fallback initials mechanism.
-- [ ] Add `prefers-reduced-motion` support for all UI animations.
-- [ ] Improve form labels, error messages, success messages, and focus handling in auth, post, report, and verification flows.
+- [x] Add skip-to-content link and ensure the `<main>` landmark has a stable `id`.
+- [x] Improve nav semantics, `aria-current` affordances, mobile/responsive behavior, and visible keyboard focus states.
+- [x] Review color contrast across the app, ensuring we do not rely on color alone for verified/admin/report states.
+- [x] Ensure buttons and links have accessible names; ensure disabled states (like unauthorized interactions) remain understandable to screen readers.
+- [x] Improve avatar `alt` text and implement a fallback initials mechanism.
+- [x] Add `prefers-reduced-motion` support for all UI animations.
+- [x] Improve form labels, error messages, success messages, and focus handling in auth, post, report, and verification flows.
 
 ## Phase 4 — Performance
 - [ ] Replace raw avatar `<img>` usage with a safe, optimized `<Image>` component using `next/image` (or a well-reasoned UI fallback if remote domains are unknown).
@@ -108,4 +108,5 @@ Include manual browser checks:
 ## Progress Log
 - **2026-04-25:** Created initial `ROADMAP_SEO_A11Y_PERFORMANCE.md` covering Phase 1 through Phase 6 planning.
 - **2026-04-25:** Reconciled and implemented Phase 2 SEO Foundations (root/route metadata, JSON-LD, sitemap, robots).
+- **2026-04-25:** Reconciled and implemented Phase 3 Accessibility (skip link, nav `aria-current`, button ARIA, form labels, reduced motion).
 - [ ] *Future passes will log updates here...*

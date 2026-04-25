@@ -65,19 +65,26 @@ export default async function ExplorePage() {
             return (
             <div key={post.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  {profile?.avatar_url && <img src={profile.avatar_url} alt="Avatar" />}
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center text-gray-500 font-medium">
+                  {profile?.avatar_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={profile.avatar_url} alt={`${profile.display_name || 'User'}'s avatar`} className="w-full h-full object-cover" />
+                  ) : (
+                    <span aria-hidden="true">{(profile?.display_name || 'U').charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
                 <div>
                   <div className="font-semibold flex items-center gap-1">
                     {profile?.display_name || 'Unknown User'}
                     {profile?.is_verified && (
-                      <span className="text-blue-500 text-xs ml-1" title="Verified">✓</span>
+                      <span className="text-blue-500 text-xs ml-1 flex items-center" title="Verified account">
+                        <span aria-hidden="true">✓</span>
+                        <span className="sr-only">Verified account</span>
+                      </span>
                     )}
                   </div>
                   <div className="text-sm text-gray-500">
-                    <Link href={`/u/${profile?.handle || profile?.id}`} className="hover:underline">
+                    <Link href={`/u/${profile?.handle || profile?.id}`} className="hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 rounded">
                       @{profile?.handle || profile?.id?.substring(0, 8)}
                     </Link>
                   </div>

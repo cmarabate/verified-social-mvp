@@ -25,11 +25,14 @@ export function FollowButton({ targetUserId, initialFollowing, disabled }: { tar
     <button 
       onClick={handleFollow} 
       disabled={loading || disabled}
-      className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+      aria-pressed={following}
+      aria-disabled={loading || disabled}
+      title={disabled ? "You must be verified to follow users" : undefined}
+      className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${
         following 
           ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' 
           : 'bg-blue-600 text-white hover:bg-blue-700'
-      } disabled:opacity-50`}
+      } disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {following ? 'Following' : 'Follow'}
     </button>
