@@ -110,7 +110,8 @@ A trust-first social network where identity verification is required for partici
 - **Key files:** `src/utils/supabase/userFacing.ts`, `src/utils/supabase/middleware.ts`, `src/app/explore/page.tsx`, `src/app/u/[handle]/page.tsx`, `src/app/admin/reports/page.tsx`, `src/app/account/page.tsx`
 - **Tests:** Added `safeNextPath` helper + tests to prevent open redirects (`src/utils/routing.*`, `tests/routing.test.mjs`).
 - **SQL:** No new SQL required for this slice.
-- **UI validation:** Confirmed “not configured” and “unreachable” panels render on `/explore`, `/u/test`, `/admin/reports` with no runtime console errors beyond devtools info.
+- **UI validation (missing Supabase env):** `/explore`, `/u/test`, `/admin/reports` show “not configured” panels (no raw errors).
+- **UI validation (configured but unreachable):** forced by running dev server with `NEXT_PUBLIC_SUPABASE_URL=http://localhost:54322` + `NEXT_PUBLIC_SUPABASE_ANON_KEY=anon`; `/explore`, `/u/test`, `/admin/reports` show “can’t reach …” / “temporarily unavailable” panels (no raw errors, no unintended auth redirects).
 - **Verification:** `npm run test:ci`, `npm run verify:ts`, `npm run verify:lint`, `NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... npm run verify:build`
 
 ### Phase 2: Onboarding and Trust Flow
