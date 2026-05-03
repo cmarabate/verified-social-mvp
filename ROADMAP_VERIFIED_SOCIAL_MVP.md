@@ -94,6 +94,7 @@ A trust-first social network where identity verification is required for partici
 - Improved unauthenticated browsing by allowing `/u/[handle]` routes without login redirects.
 - Replaced `alert()` feedback with inline accessible status messaging for likes/follows/reports.
 - Added Supabase SQL Editor package under `supabase/sql_editor_package/` (master + numbered scripts).
+- Added Supabase migration follow-ups for enum extension + indexes under `supabase/migrations/` (for CLI-based migrations).
 - Added explicit auth UX for missing Supabase config (login/signup show non-leaky inline status + disabled form).
 - Tightened admin route UX for not-configured / unauthorized / unavailable cases.
 - SQL package status: no new database changes required for this slice.
