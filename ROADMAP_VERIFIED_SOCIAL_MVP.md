@@ -98,6 +98,13 @@ A trust-first social network where identity verification is required for partici
 - Tightened admin route UX for not-configured / unauthorized / unavailable cases.
 - SQL package status: no new database changes required for this slice.
 
+##### Phase 1 Slice: Supabase Config UX + Admin UX
+- **What shipped:** Pages now render safe, accessible inline “not configured” / “unavailable” panels instead of hard errors when Supabase public env is missing. Auth actions preserve `next` and avoid open-redirects.
+- **Key files:** `src/env/public.mjs`, `src/utils/supabase/*`, `src/app/auth/*`, `src/app/admin/reports/page.tsx`, `src/app/account/*`
+- **Verification:** `npm run test:ci`, `npm run verify:ts`, `npm run verify:lint`, `NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... npm run verify:build`
+- **UI validation (missing Supabase env):** `/auth/login`, `/auth/signup`, `/admin/reports`, `/account` (forms disabled; status panels visible; no runtime console errors beyond devtools info)
+- **SQL:** No new SQL required for this slice; use existing `supabase/sql_editor_package/` for schema setup.
+
 ### Phase 2: Onboarding and Trust Flow
 - **Done when:** Users can sign up, set a unique handle, complete Stripe Identity verification, and the webhook successfully updates their profile to `verified` and `adult`.
 - **Required tests/checks:** Webhook signature validation tests.
