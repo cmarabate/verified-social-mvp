@@ -39,9 +39,16 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user: unknown = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error) {
+      return supabaseResponse
+    }
+    user = data.user
+  } catch {
+    return supabaseResponse
+  }
 
   const isPublicRoute = 
     request.nextUrl.pathname.startsWith('/auth') || 

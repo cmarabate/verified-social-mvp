@@ -3,13 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-
-function safeNextPath(value: unknown) {
-  if (typeof value !== 'string') return null
-  if (!value.startsWith('/')) return null
-  if (value.startsWith('//')) return null
-  return value
-}
+import { safeNextPath } from '@/utils/routing'
+import { classifySupabaseAvailability } from '@/utils/supabase/userFacing'
 
 export async function login(formData: FormData) {
   const nextPath = safeNextPath(formData.get('next'))
@@ -32,7 +27,11 @@ export async function login(formData: FormData) {
 
   if (error) {
     const url = new URL('/auth/login', 'http://localhost')
-    url.searchParams.set('error', 'Could not authenticate user')
+    if (classifySupabaseAvailability(error) === 'unreachable') {
+      url.searchParams.set('error', 'Authentication is temporarily unavailable')
+    } else {
+      url.searchParams.set('error', 'Could not authenticate user')
+    }
     if (nextPath) url.searchParams.set('next', nextPath)
     redirect(url.pathname + url.search)
   }
@@ -67,7 +66,11 @@ export async function signup(formData: FormData) {
 
   if (error) {
     const url = new URL('/auth/signup', 'http://localhost')
-    url.searchParams.set('error', 'Could not create user')
+    if (classifySupabaseAvailability(error) === 'unreachable') {
+      url.searchParams.set('error', 'Signup is temporarily unavailable')
+    } else {
+      url.searchParams.set('error', 'Could not create user')
+    }
     if (nextPath) url.searchParams.set('next', nextPath)
     redirect(url.pathname + url.search)
   }

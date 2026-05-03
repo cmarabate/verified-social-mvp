@@ -5,6 +5,7 @@ import Image from 'next/image'
 
 import { LikeButton } from '@/components/LikeButton'
 import { FollowButton } from '@/components/FollowButton'
+import { classifySupabaseAvailability, getSupabaseAvailabilityMessage } from '@/utils/supabase/userFacing'
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
@@ -82,7 +83,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
     return (
       <div className="max-w-2xl mx-auto py-8">
         <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
-          Profile data is temporarily unavailable. Please try again later.
+          {getSupabaseAvailabilityMessage(classifySupabaseAvailability(profileError), 'profile')}
         </div>
       </div>
     )
@@ -169,7 +170,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
       <div className="space-y-6">
         {postsError ? (
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
-            Posts are temporarily unavailable. Please try again later.
+            {getSupabaseAvailabilityMessage(classifySupabaseAvailability(postsError), 'posts')}
           </div>
         ) : posts && posts.length > 0 ? (
           posts.map((post) => {

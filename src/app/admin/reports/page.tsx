@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { dismissReport, deletePostByAdmin } from '@/app/actions/admin'
 import { Metadata } from 'next'
+import { classifySupabaseAvailability, getSupabaseAvailabilityMessage } from '@/utils/supabase/userFacing'
 
 export const metadata: Metadata = {
   title: 'Admin Reports | VerifiedSocial',
@@ -26,7 +27,29 @@ export default async function AdminReportsPage() {
     )
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: { id: string } | null = null
+  let authAvailabilityMessage: string | null = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error) {
+      authAvailabilityMessage = getSupabaseAvailabilityMessage(classifySupabaseAvailability(error), 'admin tools')
+    } else {
+      user = data.user
+    }
+  } catch (e: unknown) {
+    authAvailabilityMessage = getSupabaseAvailabilityMessage(classifySupabaseAvailability(e), 'admin tools')
+  }
+
+  if (authAvailabilityMessage) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          {authAvailabilityMessage}
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return (
@@ -74,7 +97,7 @@ export default async function AdminReportsPage() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {reportsError && (
           <div className="px-6 py-4 text-sm text-gray-700 bg-gray-50" role="status">
-            The reports queue is temporarily unavailable. Please try again later.
+            {getSupabaseAvailabilityMessage(classifySupabaseAvailability(reportsError), 'reports queue')}
           </div>
         )}
         <table className="min-w-full divide-y divide-gray-200">

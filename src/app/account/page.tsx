@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { ProfileForm } from './ProfileForm'
 import { Metadata } from 'next'
+import { classifySupabaseAvailability, getSupabaseAvailabilityMessage } from '@/utils/supabase/userFacing'
 
 export const metadata: Metadata = {
   title: 'Account | VerifiedSocial',
@@ -26,7 +27,29 @@ export default async function AccountPage() {
     )
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: { id: string; email?: string } | null = null
+  let authAvailabilityMessage: string | null = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error) {
+      authAvailabilityMessage = getSupabaseAvailabilityMessage(classifySupabaseAvailability(error), 'account')
+    } else {
+      user = data.user
+    }
+  } catch (e: unknown) {
+    authAvailabilityMessage = getSupabaseAvailabilityMessage(classifySupabaseAvailability(e), 'account')
+  }
+
+  if (authAvailabilityMessage) {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Account</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          {authAvailabilityMessage}
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return (
@@ -42,17 +65,29 @@ export default async function AccountPage() {
     )
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  const { data: verification } = await supabase
+  const { data: verification, error: verificationError } = await supabase
     .from('identity_verifications')
     .select('*')
     .eq('user_id', user.id)
     .single()
+
+  if (profileError || verificationError) {
+    const kind = classifySupabaseAvailability(profileError || verificationError)
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Account</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          {getSupabaseAvailabilityMessage(kind, 'account data')}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="max-w-2xl mx-auto py-8 space-y-8">

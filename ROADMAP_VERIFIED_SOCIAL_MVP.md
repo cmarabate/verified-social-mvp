@@ -105,6 +105,14 @@ A trust-first social network where identity verification is required for partici
 - **UI validation (missing Supabase env):** `/auth/login`, `/auth/signup`, `/admin/reports`, `/account` (forms disabled; status panels visible; no runtime console errors beyond devtools info)
 - **SQL:** No new SQL required for this slice; use existing `supabase/sql_editor_package/` for schema setup.
 
+##### Phase 1 Slice: Unreachable vs Not Configured
+- **What shipped:** Added deterministic user-safe messaging for “not configured” vs “unreachable” vs “temporarily unavailable” across Explore/Profile/Admin/Account surfaces.
+- **Key files:** `src/utils/supabase/userFacing.ts`, `src/utils/supabase/middleware.ts`, `src/app/explore/page.tsx`, `src/app/u/[handle]/page.tsx`, `src/app/admin/reports/page.tsx`, `src/app/account/page.tsx`
+- **Tests:** Added `safeNextPath` helper + tests to prevent open redirects (`src/utils/routing.*`, `tests/routing.test.mjs`).
+- **SQL:** No new SQL required for this slice.
+- **UI validation:** Confirmed “not configured” and “unreachable” panels render on `/explore`, `/u/test`, `/admin/reports` with no runtime console errors beyond devtools info.
+- **Verification:** `npm run test:ci`, `npm run verify:ts`, `npm run verify:lint`, `NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... npm run verify:build`
+
 ### Phase 2: Onboarding and Trust Flow
 - **Done when:** Users can sign up, set a unique handle, complete Stripe Identity verification, and the webhook successfully updates their profile to `verified` and `adult`.
 - **Required tests/checks:** Webhook signature validation tests.

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { LikeButton } from '@/components/LikeButton'
 import { ReportButton } from '@/components/ReportButton'
 import { Metadata } from 'next'
+import { classifySupabaseAvailability, getSupabaseAvailabilityMessage } from '@/utils/supabase/userFacing'
 
 export const metadata: Metadata = {
   title: 'Explore | VerifiedSocial',
@@ -79,7 +80,7 @@ export default async function ExplorePage() {
       <div className="space-y-6">
         {postsError ? (
           <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
-            The feed is temporarily unavailable. Please try again later.
+            {getSupabaseAvailabilityMessage(classifySupabaseAvailability(postsError), 'feed')}
           </div>
         ) : posts && posts.length > 0 ? (
           posts.map((post) => {

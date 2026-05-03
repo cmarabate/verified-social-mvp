@@ -18,16 +18,17 @@ function getErrorMessage(error: unknown) {
   return 'Authentication failed'
 }
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
 }) {
   const env = getPublicEnv()
   const isSupabaseConfigured = !!(env.supabaseUrl && env.supabaseAnonKey)
 
-  const nextParam = typeof searchParams?.next === 'string' ? searchParams.next : null
-  const errorMessage = getErrorMessage(searchParams?.error)
+  const params = searchParams ? await searchParams : undefined
+  const nextParam = typeof params?.next === 'string' ? params.next : null
+  const errorMessage = getErrorMessage(params?.error)
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
