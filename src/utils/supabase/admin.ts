@@ -1,12 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { publicEnv } from '@/env/public'
+import { requireSupabaseServiceRoleKey } from '@/env/server'
+import type { Database } from '@/types/database'
 
 export async function createAdminClient() {
   const cookieStore = await cookies()
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  return createServerClient<Database>(
+    publicEnv.supabaseUrl,
+    requireSupabaseServiceRoleKey(),
     {
       cookies: {
         getAll() {

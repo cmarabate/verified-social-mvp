@@ -35,7 +35,15 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 export default async function ProfilePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: { id: string } | null = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (!error) {
+      user = data.user
+    }
+  } catch {
+    user = null
+  }
 
   let isVerifiedAdult = false
   if (user) {
@@ -44,14 +52,24 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
       .select('is_verified, is_adult')
       .eq('id', user.id)
       .single()
-    isVerifiedAdult = currentUserProfile?.is_verified && currentUserProfile?.is_adult
+    isVerifiedAdult = !!(currentUserProfile?.is_verified && currentUserProfile?.is_adult)
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('*')
     .eq('handle', handle)
     .single()
+
+  if (profileError) {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          Profile data is temporarily unavailable. Please try again later.
+        </div>
+      </div>
+    )
+  }
 
   if (!profile) {
     notFound()
@@ -78,7 +96,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
     if (follow) isFollowing = true
   }
 
-  const { data: posts } = await supabase
+  const { data: posts, error: postsError } = await supabase
     .from('posts')
     .select(`
       id,
@@ -132,7 +150,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ handle
 
       <h2 className="text-xl font-bold mb-4">Posts</h2>
       <div className="space-y-6">
-        {posts && posts.length > 0 ? (
+        {postsError ? (
+          <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+            Posts are temporarily unavailable. Please try again later.
+          </div>
+        ) : posts && posts.length > 0 ? (
           posts.map((post) => {
             const likeCount = post.likes ? post.likes.length : 0;
             const isLiked = user ? post.likes?.some((l: { user_id: string }) => l.user_id === user.id) : false;

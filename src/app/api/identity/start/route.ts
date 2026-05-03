@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/utils/supabase/server'
+import { requireStripeSecretKey } from '@/env/server'
 
 export async function POST() {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || 'sk_test_123', {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    apiVersion: '2025-02-24.acacia' as any,
-  })
-
   try {
+    let stripe: Stripe
+    try {
+      stripe = new Stripe(requireStripeSecretKey(), {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        apiVersion: '2025-02-24.acacia' as any,
+      })
+    } catch (e: unknown) {
+      console.error('Stripe configuration error:', e instanceof Error ? e.message : 'Unknown error')
+      return NextResponse.json({ error: 'Stripe is not configured' }, { status: 500 })
+    }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -31,12 +38,12 @@ export async function POST() {
         user_id: user.id,
         provider: 'stripe_identity',
         stripe_verification_session_id: verificationSession.id,
-        status: 'pending',
+        status: 'processing',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
 
     if (upsertError) {
-      console.error('Supabase upsert error:', upsertError)
+      console.error('Supabase upsert error:', upsertError.message)
       return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
@@ -45,7 +52,7 @@ export async function POST() {
       session_id: verificationSession.id,
     })
   } catch (error: unknown) {
-    console.error('Stripe identity start error:', error)
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 })
+    console.error('Stripe identity start error:', error instanceof Error ? error.message : 'Unknown error')
+    return NextResponse.json({ error: 'Unable to start verification session' }, { status: 500 })
   }
 }

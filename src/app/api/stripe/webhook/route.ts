@@ -1,15 +1,27 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createAdminClient } from '@/utils/supabase/admin'
+import { requireStripeSecretKey, requireStripeWebhookSecret } from '@/env/server'
 
 export async function POST(req: Request) {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string || 'sk_test_123', {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    apiVersion: '2025-02-24.acacia' as any,
-  })
+  let stripe: Stripe
+  let webhookSecret: string
+  try {
+    stripe = new Stripe(requireStripeSecretKey(), {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      apiVersion: '2025-02-24.acacia' as any,
+    })
+    webhookSecret = requireStripeWebhookSecret()
+  } catch (e: unknown) {
+    console.error('Stripe configuration error:', e instanceof Error ? e.message : 'Unknown error')
+    return NextResponse.json({ error: 'Stripe is not configured' }, { status: 500 })
+  }
 
   const body = await req.text()
-  const sig = req.headers.get('stripe-signature') as string
+  const sig = req.headers.get('stripe-signature')
+  if (!sig) {
+    return NextResponse.json({ error: 'Missing stripe-signature header' }, { status: 400 })
+  }
 
   let event: Stripe.Event
 
@@ -17,7 +29,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET as string
+      webhookSecret
     )
   } catch (err: unknown) {
     const errorMsg = (err as Error).message
@@ -56,7 +68,7 @@ export async function POST(req: Request) {
           }
         }
       } catch (e) {
-        console.error('Failed to fetch verification report:', e)
+        console.error('Failed to fetch verification report:', e instanceof Error ? e.message : 'Unknown error')
       }
     }
 

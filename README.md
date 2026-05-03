@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VerifiedSocial MVP
 
-## Getting Started
+Trust-first social network MVP. Anyone can browse; posting and interactions require identity verification (Stripe Identity) and verified-adult gating enforced by Postgres RLS (Supabase).
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router), React, TypeScript
+- Supabase (Auth + Postgres + RLS)
+- Stripe Identity
+- Tailwind CSS
+
+## Local Setup
+
+1. Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create `.env.local` with the required variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Required environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Public (safe in the browser):
 
-## Learn More
+- `NEXT_PUBLIC_SITE_URL` (recommended for production; optional in local dev)
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (required to use `/verify`)
 
-To learn more about Next.js, take a look at the following resources:
+Server-only:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `SUPABASE_SERVICE_ROLE_KEY` (required for Stripe webhook processing)
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Run the dev server
 
-## Deploy on Vercel
+```bash
+yarn dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open http://localhost:3000
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Database (Supabase SQL Editor)
+
+The repo includes a Supabase SQL Editor package under `supabase/sql_editor_package/`. Run the master script first to create the schema and policies, then any follow-up scripts in order.
+
+## Verification Commands
+
+```bash
+yarn verify:ts
+yarn verify:lint
+yarn verify:build
+yarn test:ci
+```

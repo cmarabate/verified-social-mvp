@@ -3,13 +3,27 @@ import { createClient } from '@/utils/supabase/server'
 import { NavLink } from './NavLink'
 
 export default async function Navbar() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
+  let user: { id: string } | null = null
   let isAdmin = false
-  if (user) {
-    const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single()
-    isAdmin = profile?.is_admin || false
+
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase.auth.getUser()
+    if (!error) {
+      user = data.user
+    }
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single()
+      isAdmin = profile?.is_admin || false
+    }
+  } catch {
+    user = null
+    isAdmin = false
   }
 
   return (

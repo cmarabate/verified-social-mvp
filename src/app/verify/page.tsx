@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadStripe } from '@stripe/stripe-js'
+import { publicEnv } from '@/env/public'
 
 export default function VerifyPage() {
   const [loading, setLoading] = useState(false)
@@ -31,6 +32,10 @@ export default function VerifyPage() {
     setError(null)
 
     try {
+      if (!publicEnv.stripePublishableKey) {
+        throw new Error('Stripe publishable key is missing. Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to enable verification.')
+      }
+
       const res = await fetch('/api/identity/start', {
         method: 'POST',
       })
@@ -40,7 +45,7 @@ export default function VerifyPage() {
         throw new Error(data.error || 'Failed to start verification')
       }
 
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+      const stripe = await loadStripe(publicEnv.stripePublishableKey)
       if (!stripe) {
         throw new Error('Stripe failed to load')
       }
@@ -51,7 +56,7 @@ export default function VerifyPage() {
         setError(stripeError.message || 'Verification failed')
       } else {
         // Stripe handled it successfully, now we can redirect or show pending
-        setStatus('pending')
+        setStatus('processing')
         router.refresh()
       }
     } catch (err: unknown) {
@@ -72,7 +77,7 @@ export default function VerifyPage() {
           </div>
         )}
 
-        {status === 'pending' && (
+        {(status === 'pending' || status === 'processing') && (
           <div className="p-4 bg-yellow-50 text-yellow-700 rounded-md mb-6">
             Your verification is currently processing. Please check back later.
           </div>

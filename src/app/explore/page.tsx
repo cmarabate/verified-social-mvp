@@ -18,7 +18,15 @@ export const metadata: Metadata = {
 
 export default async function ExplorePage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: { id: string } | null = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (!error) {
+      user = data.user
+    }
+  } catch {
+    user = null
+  }
 
   let isVerifiedAdult = false
   if (user) {
@@ -27,10 +35,10 @@ export default async function ExplorePage() {
       .select('is_verified, is_adult')
       .eq('id', user.id)
       .single()
-    isVerifiedAdult = profile?.is_verified && profile?.is_adult
+    isVerifiedAdult = !!(profile?.is_verified && profile?.is_adult)
   }
 
-  const { data: posts } = await supabase
+  const { data: posts, error: postsError } = await supabase
       .from('posts')
       .select(`
         id,
@@ -57,7 +65,11 @@ export default async function ExplorePage() {
       {user && <PostComposer isVerified={isVerifiedAdult} />}
 
       <div className="space-y-6">
-        {posts && posts.length > 0 ? (
+        {postsError ? (
+          <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+            The feed is temporarily unavailable. Please try again later.
+          </div>
+        ) : posts && posts.length > 0 ? (
           posts.map((post) => {
             const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
             const likeCount = post.likes ? post.likes.length : 0;

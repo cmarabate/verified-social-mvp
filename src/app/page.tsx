@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { ShieldCheck, Users, MessageSquareText, Activity, UserCheck, Shield } from 'lucide-react'
+import { publicEnv } from '@/env/public'
 
 export const metadata: Metadata = {
   title: 'Home | VerifiedSocial',
@@ -17,7 +18,7 @@ export default function Home() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'VerifiedSocial',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    url: publicEnv.siteUrl,
     description: 'A community built on trust. We use real identity verification to ensure a safe, authentic environment for everyone.',
   }
 

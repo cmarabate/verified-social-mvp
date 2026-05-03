@@ -9,12 +9,14 @@ export function ReportButton({ targetId, postId, disabled }: { targetId: string,
   const [reason, setReason] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [toast, setToast] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (disabled || !reason.trim()) return
     setLoading(true)
     setMessage('')
+    setToast(null)
     
     const formData = new FormData()
     formData.append('target_id', targetId)
@@ -26,23 +28,32 @@ export function ReportButton({ targetId, postId, disabled }: { targetId: string,
       setMessage(res.error)
     } else {
       setIsOpen(false)
-      alert('Report submitted successfully.')
+      setReason('')
+      setToast('Report submitted successfully.')
+      window.setTimeout(() => setToast(null), 4000)
     }
     setLoading(false)
   }
 
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)} 
-        disabled={disabled}
-        aria-label="Report content"
-        aria-disabled={disabled}
-        className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 disabled:opacity-50 transition-colors p-1 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
-        title={disabled ? "You must be verified to report content" : "Report"}
-      >
-        <Flag aria-hidden="true" className="w-4 h-4" />
-      </button>
+      <div className="inline-flex flex-col items-start gap-1">
+        <button 
+          onClick={() => setIsOpen(true)} 
+          disabled={disabled}
+          aria-label="Report content"
+          aria-disabled={disabled}
+          className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 disabled:opacity-50 transition-colors p-1 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+          title={disabled ? "You must be verified to report content" : "Report"}
+        >
+          <Flag aria-hidden="true" className="w-4 h-4" />
+        </button>
+        {toast && (
+          <p className="text-xs text-green-700" role="status" aria-live="polite">
+            {toast}
+          </p>
+        )}
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">

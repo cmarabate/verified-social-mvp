@@ -6,7 +6,7 @@ Based on local repository inspection:
 - **Repository Health:** Basic Next.js setup. `README.md` is the stock template. `package.json` includes required dependencies.
 - **Auth & Profiles:** Supabase auth is minimally implemented (`login`, `signup`, `logout`). Profile creation on signup is handled via Postgres trigger. Basic profile editing (`/account`) is available.
 - **Social Core:** Feed (`/explore`) and profile pages (`/u/[handle]`) exist. Verified-only composer, likes, and follows are implemented. Server actions handle likes, follows, and reports.
-- **Stripe Identity:** The `/verify` route has basic API endpoints for `start` and `status`. **Critically, the Stripe Identity webhook endpoint (`/api/identity/webhook/route.ts`) is missing**, meaning verification status updates will not automatically propagate from Stripe to the database.
+- **Stripe Identity:** The `/verify` route has basic API endpoints for `start` and `status`. Stripe Identity webhooks are handled via `src/app/api/stripe/webhook/route.ts`, which processes `identity.verification_session.*` events and updates `identity_verifications` and `profiles`.
 - **Admin & Safety:** Basic report submission and admin moderation queue (`/admin/reports`) exist. Admin audit logs are recorded.
 - **UX & Accessibility:** `globals.css` includes `prefers-reduced-motion` and focus-visible utilities. Components use `lucide-react` icons. Client interaction patterns sometimes rely on primitive `alert()` rather than accessible toasts.
 
@@ -34,7 +34,7 @@ A trust-first social network where identity verification is required for partici
 - **Note:** All tables have RLS policies ensuring only verified adults can mutate social data.
 
 ## Current Known Technical Risks
-- Missing or unverified Stripe Identity webhook handling (`/api/identity/webhook/route.ts` not found).
+- Stripe configuration previously allowed unsafe fake secret fallbacks; production should fail fast and clearly when secrets are missing.
 - Env vars currently accessed via non-null assertions without centralized runtime validation.
 - README is stock template.
 - Auth forms do not appear to render query-param errors comprehensively.
@@ -71,7 +71,7 @@ A trust-first social network where identity verification is required for partici
 | Phase | Priority | Status | Owner/Agent | Key Files | Exit Criteria |
 |---|---|---|---|---|---|
 | Phase 0: Repo Audit | High | [x] Complete | SOLO Agent | `ROADMAP_VERIFIED_SOCIAL_MVP.md` | Roadmap created, git state verified. |
-| Phase 1: Foundation | High | [ ] Not started | - | `env.ts`, `README.md`, layout files | Env validation, typed DB contracts, error states. |
+| Phase 1: Foundation | High | [~] In progress | SOLO Agent | `src/env/*`, `README.md`, `src/app/error.tsx` | Env validation, typed DB contracts, error states. |
 | Phase 2: Onboarding | High | [ ] Not started | - | `auth/`, `verify/`, webhook | Stripe webhook handles verification, handle availability works. |
 | Phase 3: Core Social | Medium | [ ] Not started | - | `explore/`, `u/`, composer | Feed pagination, polished composer, comments. |
 | Phase 4: Safety | Medium | [ ] Not started | - | `admin/`, `actions/admin.ts` | Report taxonomy, admin dashboard, rate limits. |
@@ -86,6 +86,14 @@ A trust-first social network where identity verification is required for partici
 - **Risk notes:** Changing env handling might break existing non-null assertions.
 - **Dependencies/blockers:** None.
 - **Suggested files/areas:** `src/env.ts`, `src/utils/supabase/`, `README.md`, `src/app/error.tsx`.
+
+#### Phase 1 Progress (Foundation Hardening)
+- Added centralized env validation for public vs server-only variables.
+- Added typed database contract derived from `supabase/migrations/20260423000000_initial_schema.sql`.
+- Added global loading, not-found, and error UI.
+- Improved unauthenticated browsing by allowing `/u/[handle]` routes without login redirects.
+- Replaced `alert()` feedback with inline accessible status messaging for likes/follows/reports.
+- Added Supabase SQL Editor package under `supabase/sql_editor_package/` (master + numbered scripts).
 
 ### Phase 2: Onboarding and Trust Flow
 - **Done when:** Users can sign up, set a unique handle, complete Stripe Identity verification, and the webhook successfully updates their profile to `verified` and `adult`.

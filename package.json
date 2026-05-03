@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "test:ci": "node --test tests/*.test.mjs",
+    "verify:build": "next build",
+    "verify:ts": "tsc --noEmit",
+    "verify:lint": "eslint",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
