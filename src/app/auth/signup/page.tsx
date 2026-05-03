@@ -2,6 +2,7 @@ import { signup } from '../actions'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { getPublicEnv } from '@/env/public'
+import { safeNextPath } from '@/utils/routing'
 
 export const metadata: Metadata = {
   title: 'Sign Up | VerifiedSocial',
@@ -27,7 +28,7 @@ export default async function SignupPage({
   const isSupabaseConfigured = !!(env.supabaseUrl && env.supabaseAnonKey)
 
   const params = searchParams ? await searchParams : undefined
-  const nextParam = typeof params?.next === 'string' ? params.next : null
+  const nextParam = safeNextPath(params?.next)
   const errorMessage = getErrorMessage(params?.error)
 
   return (

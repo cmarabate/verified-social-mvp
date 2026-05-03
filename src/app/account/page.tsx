@@ -69,13 +69,13 @@ export default async function AccountPage() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
   const { data: verification, error: verificationError } = await supabase
     .from('identity_verifications')
     .select('*')
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
   if (profileError || verificationError) {
     const kind = classifySupabaseAvailability(profileError || verificationError)
@@ -84,6 +84,17 @@ export default async function AccountPage() {
         <h1 className="text-3xl font-bold mb-6">Your Account</h1>
         <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
           {getSupabaseAvailabilityMessage(kind, 'account data')}
+        </div>
+      </div>
+    )
+  }
+
+  if (!profile) {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Account</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          Your account profile is not available yet. Please try again later.
         </div>
       </div>
     )
@@ -100,8 +111,8 @@ export default async function AccountPage() {
           <div className="font-medium">{user.email}</div>
         </div>
         <ProfileForm 
-          initialHandle={profile?.handle || ''} 
-          initialName={profile?.display_name || ''} 
+          initialHandle={profile.handle || ''} 
+          initialName={profile.display_name || ''} 
         />
       </div>
 
@@ -119,7 +130,7 @@ export default async function AccountPage() {
           </div>
 
           <div className="text-gray-500 text-sm">Age Requirement</div>
-          <div className="font-medium">{profile?.is_adult ? 'Verified (18+)' : 'Not verified'}</div>
+          <div className="font-medium">{profile.is_adult ? 'Verified (18+)' : 'Not verified'}</div>
         </div>
 
         {verification?.status !== 'verified' && (
