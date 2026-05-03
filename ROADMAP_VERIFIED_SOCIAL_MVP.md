@@ -117,7 +117,7 @@ A trust-first social network where identity verification is required for partici
 ##### Phase 1 Slice: Auth + Account Not Configured UX
 - **What shipped:** Login/signup forms disable cleanly when Supabase public env is missing; account page distinguishes not configured vs unreachable vs not logged in vs missing profile.
 - **Key files:** `src/app/auth/login/page.tsx`, `src/app/auth/signup/page.tsx`, `src/app/account/page.tsx`, `src/utils/routing.*`, `src/utils/supabase/userFacing.ts`
-- **SQL:** No new SQL required for this slice.
+- **SQL:** No new SQL required for this auth/account UX slice.
 - **UI validation (missing Supabase env):** `/auth/login`, `/auth/signup` show “not configured” panels + disabled form inputs; `/account` shows “not configured” panel.
 - **UI validation (configured but unreachable):** with `NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321`, `NEXT_PUBLIC_SUPABASE_ANON_KEY=anon`; `/auth/login` and `/auth/signup` render normally (no crash/leaks), `/account` shows “can’t reach …” / “temporarily unavailable” messaging (no raw errors).
 - **Verification:** `npm run test:ci`, `npm run verify:ts`, `npm run verify:lint`, `NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... NEXT_PUBLIC_SITE_URL=... npm run verify:build`
