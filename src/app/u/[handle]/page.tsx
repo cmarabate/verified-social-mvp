@@ -8,33 +8,50 @@ import { FollowButton } from '@/components/FollowButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params
-  const supabase = await createClient()
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('display_name, handle')
-    .eq('handle', handle)
-    .single()
+  try {
+    const supabase = await createClient()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('display_name, handle')
+      .eq('handle', handle)
+      .single()
 
-  if (!profile) {
-    return {
-      title: 'User Not Found | VerifiedSocial'
+    if (!profile) {
+      return {
+        title: 'User Not Found | VerifiedSocial'
+      }
     }
-  }
 
-  return {
-    title: `${profile.display_name || 'Unknown User'} (@${profile.handle}) | VerifiedSocial`,
-    description: `Check out ${profile.display_name || 'Unknown User'}'s profile on VerifiedSocial.`,
-    openGraph: {
+    return {
       title: `${profile.display_name || 'Unknown User'} (@${profile.handle}) | VerifiedSocial`,
       description: `Check out ${profile.display_name || 'Unknown User'}'s profile on VerifiedSocial.`,
-      url: `/u/${profile.handle}`,
-    },
+      openGraph: {
+        title: `${profile.display_name || 'Unknown User'} (@${profile.handle}) | VerifiedSocial`,
+        description: `Check out ${profile.display_name || 'Unknown User'}'s profile on VerifiedSocial.`,
+        url: `/u/${profile.handle}`,
+      },
+    }
+  } catch {
+    return {
+      title: 'Profile | VerifiedSocial'
+    }
   }
 }
 
 export default async function ProfilePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params
-  const supabase = await createClient()
+  let supabase: Awaited<ReturnType<typeof createClient>>
+  try {
+    supabase = await createClient()
+  } catch {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          This app is not configured for data access yet. Please set the required Supabase environment variables to enable profiles.
+        </div>
+      </div>
+    )
+  }
   let user: { id: string } | null = null
   try {
     const { data, error } = await supabase.auth.getUser()

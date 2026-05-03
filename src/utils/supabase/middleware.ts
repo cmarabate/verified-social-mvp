@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { publicEnv } from '@/env/public'
+import { requireSupabasePublicEnv } from '@/env/public'
 import type { Database } from '@/types/database'
 
 export async function updateSession(request: NextRequest) {
@@ -8,9 +8,19 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
+  let supabaseUrl: string
+  let supabaseAnonKey: string
+  try {
+    const env = requireSupabasePublicEnv()
+    supabaseUrl = env.supabaseUrl
+    supabaseAnonKey = env.supabaseAnonKey
+  } catch {
+    return supabaseResponse
+  }
+
   const supabase = createServerClient<Database>(
-    publicEnv.supabaseUrl,
-    publicEnv.supabaseAnonKey,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {

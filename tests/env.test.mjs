@@ -1,19 +1,37 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-test('public env requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY', async () => {
-  process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321'
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon'
-  process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3000'
+function importFresh(relativePath) {
+  return import(new URL(`${relativePath}?t=${Date.now()}`, import.meta.url).href)
+}
 
-  const mod = await import('../src/env/public.mjs')
-  assert.equal(mod.publicEnv.supabaseUrl, 'http://localhost:54321')
-  assert.equal(mod.publicEnv.supabaseAnonKey, 'anon')
+test('public env does not hard-crash when supabase env is missing', async () => {
+  delete process.env.NEXT_PUBLIC_SUPABASE_URL
+  delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  delete process.env.NEXT_PUBLIC_SITE_URL
+
+  const mod = await importFresh('../src/env/public.mjs')
+  const env = mod.getPublicEnv()
+
+  assert.equal(env.supabaseUrl, null)
+  assert.equal(env.supabaseAnonKey, null)
+  assert.equal(typeof env.siteUrl, 'string')
+})
+
+test('public env can require supabase config explicitly when needed', async () => {
+  delete process.env.NEXT_PUBLIC_SUPABASE_URL
+  delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  const mod = await importFresh('../src/env/public.mjs')
+  assert.throws(
+    () => mod.requireSupabasePublicEnv(),
+    /Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL|Missing required environment variable: NEXT_PUBLIC_SUPABASE_ANON_KEY/
+  )
 })
 
 test('server env getters throw when missing', async () => {
   delete process.env.STRIPE_SECRET_KEY
 
-  const mod = await import('../src/env/server.mjs')
+  const mod = await importFresh('../src/env/server.mjs')
   assert.throws(() => mod.requireStripeSecretKey(), /Missing required environment variable: STRIPE_SECRET_KEY/)
 })

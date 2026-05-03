@@ -12,15 +12,32 @@ export const metadata: Metadata = {
 }
 
 export default async function AccountPage() {
-  const supabase = await createClient()
+  let supabase: Awaited<ReturnType<typeof createClient>>
+  try {
+    supabase = await createClient()
+  } catch {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Account</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          This app is not configured for authentication yet. Set the required Supabase environment variables to enable account access.
+        </div>
+      </div>
+    )
+  }
 
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     return (
-      <div className="p-8 text-center">
-        <p>Please log in.</p>
-        <Link href="/auth/login" className="text-blue-600 underline mt-4 block">Log in</Link>
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Account</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          Please log in to view your account.
+        </div>
+        <Link href="/auth/login?next=%2Faccount" className="inline-flex mt-4 text-blue-600 hover:text-blue-500 font-semibold">
+          Log in
+        </Link>
       </div>
     )
   }
@@ -60,7 +77,7 @@ export default async function AccountPage() {
           <div className="font-medium">
             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
               ${verification?.status === 'verified' ? 'bg-green-100 text-green-800' : 
-                verification?.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                verification?.status === 'pending' || verification?.status === 'processing' ? 'bg-yellow-100 text-yellow-800' : 
                 'bg-gray-100 text-gray-800'}`}>
               {verification?.status || 'unverified'}
             </span>

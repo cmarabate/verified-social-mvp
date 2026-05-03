@@ -17,7 +17,19 @@ export const metadata: Metadata = {
 }
 
 export default async function ExplorePage() {
-  const supabase = await createClient()
+  let supabase: Awaited<ReturnType<typeof createClient>>
+  try {
+    supabase = await createClient()
+  } catch {
+    return (
+      <div className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Explore</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          This app is not configured for data access yet. Please set the required Supabase environment variables to enable the feed.
+        </div>
+      </div>
+    )
+  }
   let user: { id: string } | null = null
   try {
     const { data, error } = await supabase.auth.getUser()

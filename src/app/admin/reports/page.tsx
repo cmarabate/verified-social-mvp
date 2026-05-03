@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase/server'
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { dismissReport, deletePostByAdmin } from '@/app/actions/admin'
 import { Metadata } from 'next'
@@ -13,10 +12,32 @@ export const metadata: Metadata = {
 }
 
 export default async function AdminReportsPage() {
-  const supabase = await createClient()
+  let supabase: Awaited<ReturnType<typeof createClient>>
+  try {
+    supabase = await createClient()
+  } catch {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          Admin tools are not configured yet. Set the required Supabase environment variables to enable moderation.
+        </div>
+      </div>
+    )
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) return notFound()
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          You must be logged in to access admin tools.
+        </div>
+      </div>
+    )
+  }
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -24,9 +45,18 @@ export default async function AdminReportsPage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile?.is_admin) return notFound()
+  if (!profile?.is_admin) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          You do not have access to this page.
+        </div>
+      </div>
+    )
+  }
 
-  const { data: reports } = await supabase
+  const { data: reports, error: reportsError } = await supabase
     .from('reports')
     .select(`
       *,
@@ -42,6 +72,11 @@ export default async function AdminReportsPage() {
       <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        {reportsError && (
+          <div className="px-6 py-4 text-sm text-gray-700 bg-gray-50" role="status">
+            The reports queue is temporarily unavailable. Please try again later.
+          </div>
+        )}
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>

@@ -94,6 +94,9 @@ A trust-first social network where identity verification is required for partici
 - Improved unauthenticated browsing by allowing `/u/[handle]` routes without login redirects.
 - Replaced `alert()` feedback with inline accessible status messaging for likes/follows/reports.
 - Added Supabase SQL Editor package under `supabase/sql_editor_package/` (master + numbered scripts).
+- Added explicit auth UX for missing Supabase config (login/signup show non-leaky inline status + disabled form).
+- Tightened admin route UX for not-configured / unauthorized / unavailable cases.
+- SQL package status: no new database changes required for this slice.
 
 ### Phase 2: Onboarding and Trust Flow
 - **Done when:** Users can sign up, set a unique handle, complete Stripe Identity verification, and the webhook successfully updates their profile to `verified` and `adult`.
