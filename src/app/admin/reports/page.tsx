@@ -21,7 +21,7 @@ export default async function AdminReportsPage() {
       <div className="max-w-4xl mx-auto py-8">
         <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
         <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
-          Admin tools are not configured yet. Set the required Supabase environment variables to enable moderation.
+          This app is not configured for data access yet. Please set the required Supabase environment variables to enable moderation.
         </div>
       </div>
     )
@@ -62,11 +62,22 @@ export default async function AdminReportsPage() {
     )
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('is_admin')
     .eq('id', user.id)
     .single()
+
+  if (profileError) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-8">Admin Reports Queue</h1>
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700" role="status">
+          {getSupabaseAvailabilityMessage(classifySupabaseAvailability(profileError), 'admin tools')}
+        </div>
+      </div>
+    )
+  }
 
   if (!profile?.is_admin) {
     return (
