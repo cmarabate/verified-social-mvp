@@ -2,6 +2,24 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { classifySupabaseAvailability } from '@/utils/supabase/userFacing'
+
+function getProfileUpdateErrorMessage(error: unknown) {
+  const msg =
+    error && typeof error === 'object' && 'message' in error && typeof (error as { message?: unknown }).message === 'string'
+      ? (error as { message: string }).message
+      : null
+
+  if (msg && (/profiles_handle_key/i.test(msg) || /duplicate key value/i.test(msg))) {
+    return 'That handle is already taken.'
+  }
+
+  if (classifySupabaseAvailability(error) === 'unreachable') {
+    return 'Profile updates are temporarily unavailable.'
+  }
+
+  return 'Could not update profile.'
+}
 
 export async function updateProfile(formData: FormData) {
   let supabase: Awaited<ReturnType<typeof createClient>>
@@ -23,7 +41,7 @@ export async function updateProfile(formData: FormData) {
     .eq('id', user.id)
 
   if (error) {
-    return { error: error.message }
+    return { error: getProfileUpdateErrorMessage(error) }
   }
 
   revalidatePath('/account')
